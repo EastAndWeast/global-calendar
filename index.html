@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球日历订阅器 | Global Calendar Hub</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .flag {
+            font-size: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-category {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .events-preview {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .events-preview h4 {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .event-item {
+            font-size: 0.9rem;
+            padding: 4px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .event-date {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr; }
+            .stats { gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 全球日历订阅器</h1>
+            <p class="subtitle">一键订阅全球节假日、金融市场、体育赛事日历</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="calendarCount">20+</div>
+                <div class="stat-label">可订阅日历</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">国家/地区</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">免费</div>
+                <div class="stat-label">无需注册</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="holiday">节假日</button>
+            <button class="filter-btn" data-filter="financial">金融市场</button>
+            <button class="filter-btn" data-filter="sports">体育赛事</button>
+            <button class="filter-btn" data-filter="other">其他</button>
+        </div>
+
+        <div class="grid" id="calendarGrid">
+            <!-- 日历卡片将通过 JS 动态生成 -->
+        </div>
+
+        <footer>
+            <p>📅 数据来源：各国家法定节假日官方日历 | 金融市场日历基于交易所休市安排</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast">✅ 订阅链接已复制到剪贴板！</div>
+
+    <script>
+        // 日历数据
+        const calendars = [
+            {
+                id: 'cn-holiday',
+                name: '中国节假日',
+                flag: '🇨🇳',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '中国法定节假日、元旦、春节、清明、劳动节、端午、中秋、国庆',
+                events: [
+                    { name: '春节', date: '2026-01-29' },
+                    { name: '清明节', date: '2026-04-05' },
+                    { name: '劳动节', date: '2026-05-01' },
+                    { name: '端午节', date: '2026-05-31' },
+                    { name: '中秋节', date: '2026-10-06' },
+                    { name: '国庆节', date: '2026-10-01' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=%E4%B8%AD%E5%9B%BD%E8%8A%82%E5%81%87%E6%97%A5',
+                ical: '#'
+            },
+            {
+                id: 'us-holiday',
+                name: '美国节假日',
+                flag: '🇺🇸',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '美国联邦法定节假日、感恩节、独立日、马丁路德金日等',
+                events: [
+                    { name: '马丁路德金日', date: '2026-01-19' },
+                    { name: '总统日', date: '2026-02-16' },
+                    { name: ' Memorial Day', date: '2026-05-25' },
+                    { name: '独立日', date: '2026-07-04' },
+                    { name: '劳动节', date: '2026-09-07' },
+                    { name: '感恩节', date: '2026-11-26' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=US+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'jp-holiday',
+                name: '日本节假日',
+                flag: '🇯🇵',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '日本法定节假日、黄金周、孟兰盆节、樱花季',
+                events: [
+                    { name: '元旦', date: '2026-01-01' },
+                    { name: '成人日', date: '2026-01-12' },
+                    { name: '建国纪念日', date: '2026-02-11' },
+                    { name: '天皇生日', date: '2026-02-23' },
+                    { name: '樱花季', date: '2026-03-20' },
+                    { name: '黄金周', date: '2026-04-29' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Japan+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'uk-holiday',
+                name: '英国节假日',
+                flag: '🇬🇧',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '英国银行假日、圣诞节、复活节',
+                events: [
+                    { name: '元旦', date: '2026-01-01' },
+                    { name: 'Good Friday', date: '2026-04-03' },
+                    { name: '复活节周一', date: '2026-04-06' },
+                    { name: 'Early May Bank Holiday', date: '2026-05-04' },
+                    { name: 'Spring Bank Holiday', date: '2026-05-25' },
+                    { name: '圣诞节', date: '2026-12-25' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=UK+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'eu-holiday',
+                name: '欧洲节假日',
+                flag: '🇪🇺',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '欧盟主要国家节假日、法国、德国、意大利、西班牙',
+                events: [
+                    { name: '元旦', date: '2026-01-01' },
+                    { name: '复活节', date: '2026-04-05' },
+                    { name: '劳动节', date: '2026-05-01' },
+                    { name: '欧洲日', date: '2026-05-09' },
+                    { name: '圣诞节', date: '2026-12-25' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=EU+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'hk-holiday',
+                name: '香港节假日',
+                flag: '🇭🇰',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '香港公众假期、农历新年、复活节、劳动节',
+                events: [
+                    { name: '农历新年', date: '2026-01-29' },
+                    { name: '清明节', date: '2026-04-05' },
+                    { name: '劳动节', date: '2026-05-01' },
+                    { name: '佛诞节', date: '2026-05-16' },
+                    { name: '国庆日', date: '2026-10-01' },
+                    { name: '圣诞节', date: '2026-12-25' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Hong+Kong+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'sg-holiday',
+                name: '新加坡节假日',
+                flag: '🇸🇬',
+                category: '节假日',
+                categoryType: 'holiday',
+                description: '新加坡公共假期、种族和谐日、开斋节、屠妖节',
+                events: [
+                    { name: '元旦', date: '2026-01-01' },
+                    { name: '农历新年', date: '2026-01-29' },
+                    { name: '开斋节', date: '2026-03-01' },
+                    { name: '劳动节', date: '2026-05-01' },
+                    { name: '屠妖节', date: '2026-10-20' },
+                    { name: '圣诞节', date: '2026-12-25' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Singapore+Holidays',
+                ical: '#'
+            },
+            {
+                id: 'nyse',
+                name: '纽约证券交易所休市日历',
+                flag: '🇺🇸',
+                category: '金融市场',
+                categoryType: 'financial',
+                description: 'NYSE 股市休市日期、感恩节提前收盘',
+                events: [
+                    { name: '新年', date: '2026-01-01' },
+                    { name: '马丁路德金日', date: '2026-01-19' },
+                    { name: '总统日', date: '2026-02-16' },
+                    { name: 'Good Friday', date: '2026-04-03' },
+                    { name: '独立日', date: '2026-07-03' },
+                    { name: '感恩节', date: '2026-11-26' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=NYSE+Market+Closings',
+                ical: '#'
+            },
+            {
+                id: 'lse',
+                name: '伦敦证券交易所休市日历',
+                flag: '🇬🇧',
+                category: '金融市场',
+                categoryType: 'financial',
+                description: 'LSE 股市休市日期',
+                events: [
+                    { name: '元旦', date: '2026-01-01' },
+                    { name: 'Good Friday', date: '2026-04-03' },
+                    { name: '复活节周一', date: '2026-04-06' },
+                    { name: 'Early May Bank', date: '2026-05-04' },
+                    { name: 'Spring Bank', date: '2026-05-25' },
+                    { name: '圣诞节', date: '2026-12-25' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=LSE+Market+Closings',
+                ical: '#'
+            },
+            {
+                id: 'hkex',
+                name: '香港交易所休市日历',
+                flag: '🇭🇰',
+                category: '金融市场',
+                categoryType: 'financial',
+                description: 'HKEX 股市休市日期、农历新年休市',
+                events: [
+                    { name: '农历新年初一', date: '2026-01-29' },
+                    { name: '农历新年初二', date: '2026-01-30' },
+                    { name: '农历新年初三', date: '2026-01-31' },
+                    { name: '清明节', date: '2026-04-05' },
+                    { name: '劳动节', date: '2026-05-01' },
+                    { name: '佛诞节', date: '2026-05-16' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=HKEX+Market+Closings',
+                ical: '#'
+            },
+            {
+                id: 'crypto-market',
+                name: '加密货币市场日历',
+                flag: '₿',
+                category: '金融市场',
+                categoryType: 'financial',
+                description: '主要加密货币交易所休市时间、BTC减半事件',
+                events: [
+                    { name: '周末', date: '每周' },
+                    { name: '减半事件', date: '待定' },
+                    { name: 'ETFs 审批', date: '待定' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Crypto+Market+Calendar',
+                ical: '#'
+            },
+            {
+                id: 'nba',
+                name: 'NBA 赛程',
+                flag: '🏀',
+                category: '体育赛事',
+                categoryType: 'sports',
+                description: 'NBA 2025-2026 赛季关键比赛日',
+                events: [
+                    { name: '常规赛开始', date: '2025-10-22' },
+                    { name: '圣诞大战', date: '2025-12-25' },
+                    { name: '全明星赛', date: '2026-02-15' },
+                    { name: '季后赛开始', date: '2026-04-19' },
+                    { name: '总决赛', date: '2026-06-04' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=NBA+2025-26+Schedule',
+                ical: '#'
+            },
+            {
+                id: 'world-cup',
+                name: 'FIFA 世界杯',
+                flag: '⚽',
+                category: '体育赛事',
+                categoryType: 'sports',
+                description: '2026 世界杯（美国/加拿大/墨西哥）',
+                events: [
+                    { name: '小组赛开始', date: '2026-06-11' },
+                    { name: '1/8决赛', date: '2026-06-28' },
+                    { name: '1/4决赛', date: '2026-07-03' },
+                    { name: '半决赛', date: '2026-07-08' },
+                    { name: '决赛', date: '2026-07-12' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=FIFA+World+Cup+2026',
+                ical: '#'
+            },
+            {
+                id: 'olympics',
+                name: '奥运会',
+                flag: '🏅',
+                category: '体育赛事',
+                categoryType: 'sports',
+                description: '2026 冬奥会、2028 夏奥会',
+                events: [
+                    { name: '米兰冬奥会', date: '2026-02-06' },
+                    { name: '洛杉矶夏奥会', date: '2028-07-14' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Olympics+2026-2028',
+                ical: '#'
+            },
+            {
+                id: 'f1',
+                name: 'F1 大奖赛',
+                flag: '🏎️',
+                category: '体育赛事',
+                categoryType: 'sports',
+                description: '2026 F1 赛季赛历',
+                events: [
+                    { name: '巴林大奖赛', date: '2026-02-28' },
+                    { name: '中国大奖赛', date: '2026-03-22' },
+                    { name: '日本大奖赛', date: '2026-04-05' },
+                    { name: '摩纳哥大奖赛', date: '2026-05-24' },
+                    { name: '英国大奖赛', date: '2026-07-05' },
+                    { name: '阿布扎比收官', date: '2026-11-29' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=F1+2026+Season+Calendar',
+                ical: '#'
+            },
+            {
+                id: 'euro-football',
+                name: '欧洲足球联赛',
+                flag: '⚽',
+                category: '体育赛事',
+                categoryType: 'sports',
+                description: '欧冠、欧联杯关键比赛日',
+                events: [
+                    { name: '欧冠1/8决赛', date: '2026-02-17' },
+                    { name: '欧冠1/4决赛', date: '2026-04-08' },
+                    { name: '欧冠半决赛', date: '2026-05-06' },
+                    { name: '欧冠决赛', date: '2026-05-30' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=UEFA+Champions+League+2025-26',
+                ical: '#'
+            },
+            {
+                id: 'lunar-calendar',
+                name: '农历日历',
+                flag: '📅',
+                category: '其他',
+                categoryType: 'other',
+                description: '中国传统农历节气、宜忌',
+                events: [
+                    { name: '立春', date: '2026-02-04' },
+                    { name: '雨水', date: '2026-02-19' },
+                    { name: '惊蛰', date: '2026-03-06' },
+                    { name: '春分', date: '2026-03-21' },
+                    { name: '清明', date: '2026-04-05' },
+                    { name: '谷雨', date: '2026-04-20' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Lunar+Calendar+2026',
+                ical: '#'
+            },
+            {
+                id: 'eclipse',
+                name: '日食月食',
+                flag: '🌑',
+                category: '其他',
+                categoryType: 'other',
+                description: '2026 年重大天象',
+                events: [
+                    { name: '日偏食', date: '2026-02-17' },
+                    { name: '日全食', date: '2026-08-12' },
+                    { name: '月偏食', date: '2026-03-03' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Eclipses+2026',
+                ical: '#'
+            },
+            {
+                id: 'tech-events',
+                name: '科技行业大会',
+                flag: '📱',
+                category: '其他',
+                categoryType: 'other',
+                description: 'WWDC、Google I/O、TechCrunch Disrupt 等',
+                events: [
+                    { name: 'MWC', date: '2026-03-02' },
+                    { name: 'Google I/O', date: '2026-05-14' },
+                    { name: 'WWDC', date: '2026-06-09' },
+                    { name: 'TechCrunch Disrupt', date: '2026-10-07' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Tech+Conferences+2026',
+                ical: '#'
+            },
+            {
+                id: 'earnings',
+                name: '财报季',
+                flag: '📊',
+                category: '金融市场',
+                categoryType: 'financial',
+                description: '美股财报季关键日期',
+                events: [
+                    { name: 'Q1 财报季', date: '2026-04' },
+                    { name: 'Q2 财报季', date: '2026-07' },
+                    { name: 'Q3 财报季', date: '2026-10' },
+                    { name: 'Q4 财报季', date: '2027-01' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Earnings+Season+2026',
+                ical: '#'
+            }
+        ];
+
+        // 渲染日历卡片
+        function renderCalendars(filter = 'all') {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            const filtered = filter === 'all' 
+                ? calendars 
+                : calendars.filter(c => c.categoryType === filter);
+
+            filtered.forEach(cal => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const eventsHtml = cal.events.slice(0, 4).map(e => `
+                    <div class="event-item">
+                        <span>${e.name}</span>
+                        <span class="event-date">${e.date}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="flag">${cal.flag}</span>
+                        <span class="card-title">${cal.name}</span>
+                    </div>
+                    <span class="card-category">${cal.category}</span>
+                    <p class="card-desc">${cal.description}</p>
+                    <div class="events-preview">
+                        <h4>📅 即将到来的事件</h4>
+                        ${eventsHtml}
+                    </div>
+                    <div class="btn-group">
+                        <a href="${cal.gcal}" target="_blank" class="btn btn-primary" onclick="copyLink('${cal.gcal}')">
+                            📌 Google Calendar
+                        </a>
+                        <a href="${cal.ical}" class="btn btn-secondary" onclick="copyLink('${cal.name}')">
+                            📋 iCal
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('calendarCount').textContent = filtered.length;
+        }
+
+        // 复制链接
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast();
+            });
+        }
+
+        // 显示提示
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 筛选按钮事件
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderCalendars(btn.dataset.filter);
+            });
+        });
+
+        // 初始渲染
+        renderCalendars();
+    </script>
+</body>
+</html>

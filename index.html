@@ -282,6 +282,8 @@
             <button class="filter-btn" data-filter="holiday">节假日</button>
             <button class="filter-btn" data-filter="financial">金融市场</button>
             <button class="filter-btn" data-filter="sports">体育赛事</button>
+            <button class="filter-btn" data-filter="tech">科技行业</button>
+            <button class="filter-btn" data-filter="economic">经济数据</button>
             <button class="filter-btn" data-filter="other">其他</button>
         </div>
 
@@ -638,6 +640,163 @@
                     { name: 'Q4 财报季', date: '2027-01' }
                 ],
                 gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Earnings+Season+2026',
+                ical: '#'
+            },
+            // 科技行业
+            {
+                id: 'apple-events',
+                name: 'Apple 发布会',
+                flag: '🍎',
+                category: '科技行业',
+                categoryType: 'tech',
+                description: 'WWDC、秋季发布会、iPhone 发布会',
+                events: [
+                    { name: 'WWDC 2026', date: '2026-06-09' },
+                    { name: '秋季发布会', date: '2026-09' },
+                    { name: 'iPhone 发布会', date: '2026-09' },
+                    { name: '春季发布会', date: '2026-03' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Apple+Events+2026',
+                ical: '#'
+            },
+            {
+                id: 'google-io',
+                name: 'Google I/O',
+                flag: '🔍',
+                category: '科技行业',
+                categoryType: 'tech',
+                description: 'Google 开发者大会',
+                events: [
+                    { name: 'Google I/O 2026', date: '2026-05-14' },
+                    { name: 'Google I/O 2027', date: '2027-05' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Google+IO+2026',
+                ical: '#'
+            },
+            {
+                id: 'microsoft-build',
+                name: 'Microsoft Build',
+                flag: '🪟',
+                category: '科技行业',
+                categoryType: 'tech',
+                description: '微软开发者大会',
+                events: [
+                    { name: 'Microsoft Build 2026', date: '2026-05' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Microsoft+Build+2026',
+                ical: '#'
+            },
+            {
+                id: 'tesla-earnings',
+                name: 'Tesla 财报日',
+                flag: '🚗',
+                category: '科技行业',
+                categoryType: 'tech',
+                description: 'Tesla 季度财报发布',
+                events: [
+                    { name: 'Q4 2025 财报', date: '2026-01' },
+                    { name: 'Q1 2026 财报', date: '2026-04' },
+                    { name: 'Q2 2026 财报', date: '2026-07' },
+                    { name: 'Q3 2026 财报', date: '2026-10' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Tesla+Earnings+2026',
+                ical: '#'
+            },
+            {
+                id: 'nvidia-gtc',
+                name: 'NVIDIA GTC',
+                flag: '🎮',
+                category: '科技行业',
+                categoryType: 'tech',
+                description: 'NVIDIA GPU 技术大会',
+                events: [
+                    { name: 'GTC 2026', date: '2026-03' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=NVIDIA+GTC+2026',
+                ical: '#'
+            },
+            // 经济数据
+            {
+                id: 'us-nfp',
+                name: '美国非农就业',
+                flag: '📈',
+                category: '经济数据',
+                categoryType: 'economic',
+                description: '美国非农就业数据发布（每月第一个周五）',
+                events: [
+                    { name: '2026年1月', date: '2026-02-07' },
+                    { name: '2026年2月', date: '2026-03-06' },
+                    { name: '2026年3月', date: '2026-04-03' },
+                    { name: '2026年4月', date: '2026-05-01' },
+                    { name: '2026年5月', date: '2026-06-05' },
+                    { name: '2026年6月', date: '2026-07-03' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=US+Non-Farm+Payrolls',
+                ical: '#'
+            },
+            {
+                id: 'us-cpi',
+                name: '美国 CPI/PPI 数据',
+                flag: '📉',
+                category: '经济数据',
+                categoryType: 'economic',
+                description: '美国通胀数据发布',
+                events: [
+                    { name: '1月 CPI', date: '2026-02-26' },
+                    { name: '2月 CPI', date: '2026-03-25' },
+                    { name: '3月 CPI', date: '2026-04-22' },
+                    { name: '4月 CPI', date: '2026-05-20' },
+                    { name: '5月 CPI', date: '2026-06-17' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=US+CPI+Data',
+                ical: '#'
+            },
+            {
+                id: 'fomc',
+                name: '美联储 FOMC 会议',
+                flag: '🏦',
+                category: '经济数据',
+                categoryType: 'economic',
+                description: '美联储利率决策会议',
+                events: [
+                    { name: '1月会议', date: '2026-01-28' },
+                    { name: '3月会议', date: '2026-03-18' },
+                    { name: '5月会议', date: '2026-05-07' },
+                    { name: '6月会议', date: '2026-06-17' },
+                    { name: '7月会议', date: '2026-07-30' },
+                    { name: '9月会议', date: '2026-09-17' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=FOMC+Meetings+2026',
+                ical: '#'
+            },
+            {
+                id: 'us-gdp',
+                name: '美国 GDP 数据',
+                flag: '📊',
+                category: '经济数据',
+                categoryType: 'economic',
+                description: '美国GDP增速数据发布',
+                events: [
+                    { name: 'Q4 2025 终值', date: '2026-02-25' },
+                    { name: 'Q1 2026 初值', date: '2026-04-30' },
+                    { name: 'Q1 2026 终值', date: '2026-05-27' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=US+GDP+Data',
+                ical: '#'
+            },
+            {
+                id: 'china-pmi',
+                name: '中国 PMI 数据',
+                flag: '🇨🇳',
+                category: '经济数据',
+                categoryType: 'economic',
+                description: '中国制造业/非制造业 PMI',
+                events: [
+                    { name: '1月 PMI', date: '2026-02-01' },
+                    { name: '2月 PMI', date: '2026-03-01' },
+                    { name: '3月 PMI', date: '2026-04-01' }
+                ],
+                gcal: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=China+PMI+Data',
                 ical: '#'
             }
         ];
